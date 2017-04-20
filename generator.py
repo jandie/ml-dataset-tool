@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 from random import randint
 
-AMOUNT_OF_DAYS = 11
 DEVIATION_PERCENTAGE = 10
 NAMES_FILE = "./CSV_Database_of_First_Names.csv"
 GENERATE_FILE = "./generated-log.csv"
