@@ -109,6 +109,7 @@ def generate_days(nr_of_days):
     return log
 
 
+# Code to run:
 log = generate_days(365)
 
 for x in log:
