@@ -3,7 +3,7 @@ from random import randint
 
 begin_time = datetime.strptime("00:00:00", '%H:%M:%S')
 amount_of_hours = 11
-range_percentage = 10;
+range_percentage = 10
 logins_per_hour = [
     # night
     5, 5, 5, 5, 5, 5,
