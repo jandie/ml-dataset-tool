@@ -174,7 +174,7 @@ def export_to_csv(log):
         f.write("time, username, succes, label\n")
 
         for entry in log:
-            f.write(str(entry[0]) + ", "
+            f.write(str(entry[0].time()) + ", "
                     + str(entry[1]) + ", "
                     + str(entry[2]) + ", "
                     + str(entry[3])
