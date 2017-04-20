@@ -1,10 +1,12 @@
 from datetime import datetime
 from random import randint
 
-begin_time = datetime.strptime("00:00:00", '%H:%M:%S')
-amount_of_hours = 11
-range_percentage = 10
-logins_per_hour = [
+AMOUNT_OF_DAYS = 11
+RANGE_PERCENTAGE = 10
+NAMES_FILE = "./CSV_Database_of_First_Names.csv"
+SECONDS_IN_MINUTE = 60
+MINUTES_IN_HOUR = 60
+HOUR_SHEET = [
     # night
     5, 5, 5, 5, 5, 5,
 
@@ -19,16 +21,14 @@ logins_per_hour = [
 ]
 
 
-def rand_name(list_of_names):
-    max = len(list_of_names)
-
-    return list_of_names[randint(0, max - 1)]
+def rand_name(names):
+    return names[randint(0, len(names) - 1)]
 
 
 def load_names():
     temp_names = []
 
-    with open("./CSV_Database_of_First_Names.csv") as f:
+    with open(NAMES_FILE) as f:
         for line in f:
             if len(line.strip()) > 0:
                 temp_names.append(line.strip())
@@ -36,31 +36,28 @@ def load_names():
     return temp_names
 
 
-names = load_names()
-
-
-def random_between_bounds(lph):
-    min_bound = round(lph - lph / (100 / range_percentage))
-    max_bound = round(lph + lph / (100 / range_percentage))
+def random_between_bounds(number):
+    min_bound = round(number - number / (100 / RANGE_PERCENTAGE))
+    max_bound = round(number + number / (100 / RANGE_PERCENTAGE))
 
     return randint(min_bound, max_bound)
 
 
 def generate_datetime(hour):
-    minute = randint(0, 59)
-    second = randint(0, 59)
+    minute = randint(0, MINUTES_IN_HOUR - 1)
+    second = randint(0, SECONDS_IN_MINUTE - 1)
 
     return datetime.strptime(str(hour) + ":"
                              + str(minute) + ":"
                              + str(second), '%H:%M:%S')
 
 
-def generate_day_cycle():
+def generate_day_cycle(names):
     day_log = []
 
-    for i in range(0, len(logins_per_hour)):
+    for i in range(0, len(HOUR_SHEET)):
 
-        for time in range(0, random_between_bounds(logins_per_hour[i])):
+        for time in range(0, random_between_bounds(HOUR_SHEET[i])):
             log_time = generate_datetime(i)
 
             day_log.append([log_time, rand_name(names), 1])
@@ -70,21 +67,22 @@ def generate_day_cycle():
     return day_log
 
 
-def generate_days(number_of_names):
-    temp_log = []
+def generate_days(nr_of_days):
+    log = []
+    names = load_names()
 
-    for i in range(0, number_of_names):
-        temp_day_log = generate_day_cycle()
+    for i in range(0, nr_of_days):
+        day_log = generate_day_cycle(names)
 
-        for entry in temp_day_log:
-            temp_log.append(entry)
+        for entry in day_log:
+            log.append(entry)
 
-    return temp_log
+    return log
 
 
-log = generate_days(1000)
+log = generate_days(1)
 
 for x in log:
     print(str(x[0].time()) + ", " + x[1] + ", " + str(x[2]))
 
-print("Random name: " + rand_name(names))
+print("Random name: " + rand_name(load_names()))
