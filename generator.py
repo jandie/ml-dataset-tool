@@ -1,9 +1,7 @@
 from datetime import datetime
-from datetime import timedelta
 from random import randint
 
-log = [[]]
-
+names = []
 begin_time = datetime.strptime("00:00:00", '%H:%M:%S')
 amount_of_hours = 11
 range_percentage = 10;
@@ -20,6 +18,17 @@ logins_per_hour = [
     # evening
     10, 10, 10, 10, 10, 10
 ]
+
+
+def load_names():
+    temp_names = []
+
+    with open("./CSV_Database_of_First_Names.csv") as f:
+        for line in f:
+            if len(line.strip()) > 0:
+                temp_names.append(line.strip())
+
+    return temp_names
 
 
 def random_between_bounds(lph):
@@ -54,6 +63,10 @@ def generate_day_cycle():
 
 
 log = generate_day_cycle()
+names = load_names()
 
 for x in log:
     print(x[0].time())
+
+for name in names:
+    print(name)
