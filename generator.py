@@ -19,6 +19,10 @@ logins_per_hour = [
     10, 10, 10, 10, 10, 10
 ]
 
+def rand_name(list_of_names):
+    max = len(list_of_names)
+
+    return list_of_names[randint(0, max)]
 
 def load_names():
     temp_names = []
@@ -70,3 +74,5 @@ for x in log:
 
 for name in names:
     print(name)
+
+print("Random name: " + rand_name(names))
