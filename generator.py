@@ -202,11 +202,9 @@ class Generator:
         return log
 
 
+# Code to run:
 g = Generator()
 
-# Code to run:
-log = g.generate_days(2)
-
-print(g.BEGIN_DATE)
+log = g.generate_days(365)
 
 g.export_to_csv(log)
