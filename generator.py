@@ -46,8 +46,7 @@ class Generator:
 
         # Check if Python version 3 is used
         if sys.version_info[0] != 3:
-            print("Python 3 is required for this script to function properly")
-            sys.exit(1)
+            raise EnvironmentError("Python 3 is required for this script to function properly")
 
     def random_with_deviation(self, number):
         """
