@@ -26,7 +26,7 @@ class Generator:
         # evening
         10, 10, 10, 10, 10, 10
     ]
-    BRUTEFORCE_CHANCE_SHEET = [
+    BRUTE_FORCE_CHANCE_SHEET = [
         # night
         1000, 1000, 1000, 1000, 1000, 1000,
 
@@ -63,12 +63,12 @@ class Generator:
         :param hour: The hour of the day.
         :return: A boolean representing whether or not it's time for bruteforce.
         """
-        number_to_guess = randint(0, self.BRUTEFORCE_CHANCE_SHEET[hour])
-        guess = randint(0, self.BRUTEFORCE_CHANCE_SHEET[hour])
+        number_to_guess = randint(0, self.BRUTE_FORCE_CHANCE_SHEET[hour])
+        guess = randint(0, self.BRUTE_FORCE_CHANCE_SHEET[hour])
 
         return number_to_guess == guess
 
-    def generate_brutforce_log(self, hour, names):
+    def generate_brute_force_log(self, hour, names):
         """
         Generates a bruteforce log which begins somewhere in a given hour and ends 
         when a random amount of attacks have been logged.
@@ -129,9 +129,12 @@ class Generator:
         minute = randint(0, self.MINUTES_IN_HOUR - 1)
         second = randint(0, self.SECONDS_IN_MINUTE - 1)
 
-        return datetime.strptime(str(hour) + ":"
+        return datetime.strptime(str(self.date.year) + "-"
+                                 + str(self.date.month) + "-"
+                                 + str(self.date.day) + " "
+                                 + str(hour) + ":"
                                  + str(minute) + ":"
-                                 + str(second), '%H:%M:%S')
+                                 + str(second), '%Y-%m-%d %H:%M:%S')
 
     def generate_day_cycle(self, names):
         """
@@ -141,10 +144,11 @@ class Generator:
         :return: A log of a single day cycle in a list.
         """
         day_log = []
+        time_delta = timedelta(days=1)
 
         for i in range(0, len(self.HOUR_SHEET)):
             if self.is_time_for_bruteforce(i):
-                b_log = self.generate_brutforce_log(i, names)
+                b_log = self.generate_brute_force_log(i, names)
 
                 for entry in b_log:
                     day_log.append(entry)
@@ -155,6 +159,8 @@ class Generator:
                 day_log.append([log_time, self.rand_name(names), 1, 1])
 
         day_log.sort()
+
+        self.date += time_delta
 
         return day_log
 
@@ -171,7 +177,7 @@ class Generator:
             f.write("time, username, succes, label\n")
 
             for entry in log:
-                f.write(str(entry[0].time()) + ", "
+                f.write(str(entry[0]) + ", "
                         + str(entry[1]) + ", "
                         + str(entry[2]) + ", "
                         + str(entry[3])
@@ -199,7 +205,7 @@ class Generator:
 g = Generator()
 
 # Code to run:
-log = g.generate_days(1)
+log = g.generate_days(2)
 
 print(g.BEGIN_DATE)
 
