@@ -14,6 +14,7 @@ class Generator:
     MINUTES_IN_HOUR = 60
     MAX_NR_OF_ATTACKS = 100000
     BEGIN_DATE = datetime.strptime('2015-05-12', '%Y-%m-%d')
+    CHANCE_TO_FUCK_UP = 3
     HOUR_SHEET = [
         # night
         5, 5, 5, 5, 5, 5,
@@ -60,6 +61,18 @@ class Generator:
 
         return randint(min_bound, max_bound)
 
+    def simulate_chance(self, chance):
+        """
+        Simulates a chance and randomly determines if the chance has occurred. 
+        
+        :param chance: The chance of this fucntion to return true.
+        :return: A boolean representing whether or not the chance has occurred.
+        """
+        number_to_guess = randint(0, chance)
+        guess = randint(0, chance)
+
+        return number_to_guess == guess
+
     def is_time_for_bruteforce(self, hour):
         """
         Randomly determines if it's time for bruteforce. This depends on the hour of day.
@@ -68,10 +81,8 @@ class Generator:
         :param hour: The hour of the day.
         :return: A boolean representing whether or not it's time for bruteforce.
         """
-        number_to_guess = randint(0, self.BRUTE_FORCE_CHANCE_SHEET[hour])
-        guess = randint(0, self.BRUTE_FORCE_CHANCE_SHEET[hour])
 
-        return number_to_guess == guess
+        return self.simulate_chance(self.BRUTE_FORCE_CHANCE_SHEET[hour])
 
     def generate_brute_force_log(self, hour, names):
         """
@@ -141,6 +152,23 @@ class Generator:
                                  + str(minute) + ":"
                                  + str(second), '%Y-%m-%d %H:%M:%S')
 
+    def generate_hour_cycle(self, hour, names):
+        """
+        Generates on hour cycle of logs.
+        
+        :param hour: The hour of the day to generate the log for.
+        :param names: List of names.
+        :return: A log of a single hour in a list.
+        """
+        day_log = []
+
+        for time in range(0, self.random_with_deviation(self.HOUR_SHEET[hour])):
+            log_time = self.generate_datetime(hour)
+
+            day_log.append([log_time, self.rand_name(names), 1, 1])
+
+        return day_log
+
     def generate_day_cycle(self, names):
         """
         Generates one day cycle of logs.
@@ -158,10 +186,8 @@ class Generator:
                 for entry in b_log:
                     day_log.append(entry)
 
-            for time in range(0, self.random_with_deviation(self.HOUR_SHEET[i])):
-                log_time = self.generate_datetime(i)
-
-                day_log.append([log_time, self.rand_name(names), 1, 1])
+            for entry in self.generate_hour_cycle(i, names):
+                day_log.append(entry)
 
         day_log.sort()
 
