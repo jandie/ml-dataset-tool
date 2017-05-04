@@ -152,6 +152,29 @@ class Generator:
                                  + str(minute) + ":"
                                  + str(second), '%Y-%m-%d %H:%M:%S')
 
+    def generate_log_in_cycle(self, log_time, name):
+        """
+        Simulates log in of a user. This user has a chance to miss type his password.
+        This chance is determined in the CHANCE_TO_FUCK_UP constant.
+        
+        :param log_time: 
+        :param name: 
+        :return: 
+        """
+        login_log = []
+        time_delta = timedelta(seconds=3)
+
+        while True:
+            if not self.simulate_chance(self.CHANCE_TO_FUCK_UP):
+                login_log.append([log_time, name, 1, 1])
+                break
+
+            login_log.append([log_time, name, 0, 1])
+
+            log_time += time_delta
+
+        return login_log
+
     def generate_hour_cycle(self, hour, names):
         """
         Generates on hour cycle of logs.
@@ -160,14 +183,14 @@ class Generator:
         :param names: List of names.
         :return: A log of a single hour in a list.
         """
-        day_log = []
+        hour_log = []
 
         for time in range(0, self.random_with_deviation(self.HOUR_SHEET[hour])):
             log_time = self.generate_datetime(hour)
 
-            day_log.append([log_time, self.rand_name(names), 1, 1])
+            hour_log.extend(self.generate_log_in_cycle(log_time, self.rand_name(names)))
 
-        return day_log
+        return hour_log
 
     def generate_day_cycle(self, names):
         """
@@ -181,13 +204,9 @@ class Generator:
 
         for i in range(0, len(self.HOUR_SHEET)):
             if self.is_time_for_bruteforce(i):
-                b_log = self.generate_brute_force_log(i, names)
+                day_log.extend(self.generate_brute_force_log(i, names))
 
-                for entry in b_log:
-                    day_log.append(entry)
-
-            for entry in self.generate_hour_cycle(i, names):
-                day_log.append(entry)
+            day_log.extend(self.generate_hour_cycle(i, names))
 
         day_log.sort()
 
