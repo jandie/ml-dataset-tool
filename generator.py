@@ -13,7 +13,7 @@ class Generator:
     SECONDS_IN_DAY = 86400
     MINUTES_IN_HOUR = 60
     MAX_NR_OF_ATTACKS = 100000
-    BEGIN_DATE = datetime.strptime('2015-05-12', '%Y-%m-%d')
+    BEGIN_DATE = datetime.strptime('2017-05-12', '%Y-%m-%d')
     CHANCE_TO_FUCK_UP = 3
     HOUR_SHEET = [
         # night
@@ -162,7 +162,7 @@ class Generator:
         :return: 
         """
         login_log = []
-        time_delta = timedelta(seconds=3)
+        time_delta = timedelta(seconds=randint(5, 15))
 
         while True:
             if not self.simulate_chance(self.CHANCE_TO_FUCK_UP):
@@ -255,6 +255,6 @@ class Generator:
 # Code to run:
 g = Generator()
 
-log = g.generate_days(365)
+log = g.generate_days(9999)
 
 g.export_to_csv(log)
