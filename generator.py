@@ -1,4 +1,5 @@
 import os.path
+import sys
 from datetime import datetime
 from datetime import timedelta
 from random import randint
@@ -42,6 +43,11 @@ class Generator:
 
     def __init__(self):
         self.date = self.BEGIN_DATE
+
+        # Check if Python version 3 is used
+        if sys.version_info[0] != 3:
+            print("Python 3 is required for this script to function properly")
+            sys.exit(1)
 
     def random_with_deviation(self, number):
         """
