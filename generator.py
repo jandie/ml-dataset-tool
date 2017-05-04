@@ -224,10 +224,11 @@ class Generator:
             os.remove(self.GENERATE_FILE)
 
         with open(self.GENERATE_FILE, "w") as f:
-            f.write("time, username, succes, label\n")
+            f.write("date, time, username, succes, label\n")
 
             for entry in log:
-                f.write(str(entry[0]) + ", "
+                f.write(str(entry[0].date()) + ", "
+                        + str(entry[0].time()) + ", "
                         + str(entry[1]) + ", "
                         + str(entry[2]) + ", "
                         + str(entry[3])
@@ -255,6 +256,6 @@ class Generator:
 # Code to run:
 g = Generator()
 
-log = g.generate_days(9999)
+log = g.generate_days(100)
 
 g.export_to_csv(log)
