@@ -12,7 +12,7 @@ class Generator:
     SECONDS_IN_MINUTE = 60
     SECONDS_IN_DAY = 86400
     MINUTES_IN_HOUR = 60
-    MAX_NR_OF_ATTACKS = 100000
+    MAX_NR_OF_ATTACKS = 50000
     BEGIN_DATE = datetime.strptime('2017-05-12', '%Y-%m-%d')
     CHANCE_TO_FUCK_UP = 3
     HOUR_SHEET = [
@@ -41,6 +41,8 @@ class Generator:
         # evening
         1000, 1000, 1000, 1000, 1000, 1000
     ]
+
+
 
     def __init__(self):
         self.date = self.BEGIN_DATE
@@ -94,7 +96,7 @@ class Generator:
         :return: A list containing the log of the attack.
         """
         time = self.generate_datetime(hour)
-        d = timedelta(seconds=1)
+        d = timedelta(seconds=randint(1, 3))
         attacks_per_second = \
             self.random_with_deviation(self.MAX_NR_OF_ATTACKS / self.SECONDS_IN_DAY)
         username = self.rand_name(names)
@@ -107,6 +109,8 @@ class Generator:
                 log.append([time, username, 0, 0])
 
             count += 1
+
+            d = timedelta(seconds=randint(0, 3))
             time += d
 
         return log
@@ -234,6 +238,25 @@ class Generator:
                         + str(entry[3])
                         + "\n")
 
+    def export_group_log_to_csv(self, group_log):
+        if os.path.isfile(self.GENERATE_FILE):
+            os.remove(self.GENERATE_FILE)
+
+        with open(self.GENERATE_FILE, "w") as f:
+            f.write("amount, username, label\n")
+
+            for entry in group_log:
+                for key, value in entry.items():
+                    label = 1
+
+                    if len(value) > 10:
+                        label = 0
+
+                    f.write(str(len(value)) + ", "
+                            + str(key) + ", "
+                            + str(label)
+                            + "\n")
+
     def generate_days(self, nr_of_days):
         """
         Generates multiple day cycles.
@@ -253,9 +276,67 @@ class Generator:
         h, m, s = [int(i) for i in str(t.time()).split(':')]
         return 3600 * h + 60 * m + s
 
+    def group_log_per_time(self, log, per_time):
+        days = self.extract_log_to_day(log)
+
+        per_time_log_list = []
+        per_time_log = {}
+
+        for day in days:
+            seconds = self.hms_to_seconds(day[0][0])
+
+            for entry in day:
+                if self.hms_to_seconds(entry[0]) <= seconds + per_time:
+                    if not entry[1] in per_time_log:
+                        per_time_log[entry[1]] = []
+
+                    per_time_log[entry[1]].append(entry)
+                else:
+                    seconds = self.hms_to_seconds(entry[0])
+
+                    per_time_log_list.append(dict(per_time_log))
+                    per_time_log.clear()
+
+                    if not entry[1] in per_time_log:
+                        per_time_log[entry[1]] = []
+
+                    per_time_log[entry[1]].append(entry)
+
+        return per_time_log_list
+
+
+    def extract_log_to_day(self, log):
+        current_day = log[0][0].date()
+
+        day = []
+        days = []
+
+        for entry in log:
+            if entry[0].date() == current_day:
+                day.append(entry)
+            else:
+                current_day = entry[0].date()
+
+                days.append(list(day))
+                day.clear()
+                day.append(entry)
+
+        return days
+
+    def extract_different_users(self, log):
+        users = []
+
+        for l in log:
+            if not any(l[1] in u for u in users):
+                users.append(l[1])
+
+        return users
+
+
+
 # Code to run:
 g = Generator()
 
-log = g.generate_days(50)
+log = g.generate_days(500)
 
-g.export_to_csv(log)
+g.export_group_log_to_csv(g.group_log_per_time(log, 1000))
