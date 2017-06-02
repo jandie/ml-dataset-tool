@@ -118,7 +118,7 @@ class Generator:
         :param names:  The list of names.
         :return: A random name from the list.
         """
-        return names[randint(0, len(names) - 1)]
+        return randint(0, len(names) - 1)
 
     def load_names(self):
         """
@@ -228,7 +228,7 @@ class Generator:
 
             for entry in log:
                 f.write(str(entry[0].date()) + ", "
-                        + str(entry[0].time()) + ", "
+                        + str(self.hms_to_seconds(entry[0])) + ", "
                         + str(entry[1]) + ", "
                         + str(entry[2]) + ", "
                         + str(entry[3])
@@ -245,17 +245,17 @@ class Generator:
         names = self.load_names()
 
         for i in range(0, nr_of_days):
-            day_log = self.generate_day_cycle(names)
-
-            for entry in day_log:
-                log.append(entry)
+            log.extend(self.generate_day_cycle(names))
 
         return log
 
+    def hms_to_seconds(self, t):
+        h, m, s = [int(i) for i in str(t.time()).split(':')]
+        return 3600 * h + 60 * m + s
 
 # Code to run:
 g = Generator()
 
-log = g.generate_days(100)
+log = g.generate_days(50)
 
 g.export_to_csv(log)
